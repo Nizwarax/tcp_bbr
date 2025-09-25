@@ -171,14 +171,72 @@ uninstall_optimizer() {
     read -p "Tekan [Enter] untuk kembali ke menu..."
 }
 
+# Mencoba mengupdate kernel untuk mendapatkan dukungan BBR
+update_kernel_for_bbr() {
+    print_header
+    echo -e "${YELLOW}PERINGATAN BESAR!${NC}"
+    echo -e "Operasi ini akan mencoba untuk meng-update kernel sistem Anda."
+    echo -e "Ini adalah tindakan berisiko yang dapat menyebabkan sistem Anda tidak bisa booting jika terjadi kesalahan."
+    echo -e "Pastikan Anda memiliki backup data penting sebelum melanjutkan."
+    echo ""
+    read -p "Apakah Anda benar-benar yakin ingin melanjutkan? (ketik 'yes' untuk konfirmasi): " confirmation
+
+    if [[ "$confirmation" != "yes" ]]; then
+        echo -e "${GREEN}Operasi dibatalkan. Tidak ada perubahan yang dibuat.${NC}"
+        sleep 3
+        return
+    fi
+
+    echo -e "${CYAN}Mendeteksi sistem operasi...${NC}"
+    local os_type
+    if [ -f /etc/debian_version ]; then
+        os_type="debian"
+    elif [ -f /etc/redhat-release ]; then
+        os_type="centos"
+    else
+        echo -e "${RED}Gagal mendeteksi sistem operasi yang didukung (Debian/Ubuntu/CentOS).${NC}"
+        sleep 3
+        return
+    fi
+
+    echo -e "${CYAN}Sistem terdeteksi sebagai: ${GREEN}${os_type}${NC}"
+    echo -e "${CYAN}Memulai proses update kernel...${NC}"
+
+    case "$os_type" in
+        "debian")
+            apt-get update && apt-get install -y linux-image-generic
+            ;;
+        "centos")
+            # Untuk CentOS, kita perlu mengimpor kunci ELRepo dan menginstal kernel-ml
+            echo -e "${CYAN}Mengimpor kunci ELRepo...${NC}"
+            rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+            echo -e "${CYAN}Menginstal repositori ELRepo...${NC}"
+            yum install -y "https://www.elrepo.org/elrepo-release-$(cut -d' ' -f4 /etc/redhat-release | cut -d. -f1).elrepo.noarch.rpm"
+            echo -e "${CYAN}Menginstal kernel mainline terbaru (kernel-ml)...${NC}"
+            yum --enablerepo=elrepo-kernel install -y kernel-ml
+            ;;
+    esac
+
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Update kernel tampaknya berhasil.${NC}"
+        echo -e "${YELLOW}Anda HARUS me-reboot sistem sekarang agar kernel baru dapat digunakan.${NC}"
+        ask_for_reboot
+    else
+        echo -e "${RED}Terjadi kesalahan selama proses update kernel.${NC}"
+        echo -e "${RED}Harap periksa output di atas untuk mencari tahu penyebabnya.${NC}"
+        sleep 5
+    fi
+}
+
 # --- Menu Utama ---
 main_menu() {
     check_root
 
-    local available_algos
-    available_algos=$(sysctl net.ipv4.tcp_available_congestion_control)
-
     while true; do
+        # Pengecekan harus di dalam loop agar status menu bisa refresh setelah update kernel
+        local available_algos
+        available_algos=$(sysctl net.ipv4.tcp_available_congestion_control)
+
         print_header
         echo -e "${PURPLE}Pilih Opsi Optimasi TCP:${NC}"
         echo -e "--------------------------"
@@ -200,10 +258,15 @@ main_menu() {
         echo -e "${CYAN}4)${NC} Tampilkan Status Saat Ini"
         echo -e "${RED}5)${NC} Uninstall & Hapus Konfigurasi"
         echo -e "--------------------------"
-        echo -e "${BLUE}6)${NC} Keluar"
+
+        if [[ $available_algos != *"bbr"* ]]; then
+            echo -e "${YELLOW}7)${NC} Coba Aktifkan Dukungan BBR (Update Kernel)"
+        fi
+
+        echo -e "${BLUE}8)${NC} Keluar"
         echo ""
 
-        read -p "Masukkan pilihan Anda [1-6]: " choice
+        read -p "Masukkan pilihan Anda: " choice
 
         case $choice in
             1)
@@ -211,7 +274,10 @@ main_menu() {
                     activate_tcp_algorithm "bbr"
                 else
                     echo -e "${RED}Error: BBR tidak didukung oleh kernel Anda.${NC}"
-                    sleep 2
+                    if [[ $available_algos != *"bbr"* ]]; then
+                        echo -e "${YELLOW}Anda bisa mencoba opsi 7 untuk meng-update kernel.${NC}"
+                    fi
+                    sleep 3
                 fi
                 ;;
             2)
@@ -222,16 +288,18 @@ main_menu() {
                     sleep 2
                 fi
                 ;;
-            3)
-                activate_default_tcp
+            3) activate_default_tcp ;;
+            4) display_current_status ;;
+            5) uninstall_optimizer ;;
+            7)
+                if [[ $available_algos != *"bbr"* ]]; then
+                    update_kernel_for_bbr
+                else
+                    echo -e "${RED}Pilihan tidak valid. Silakan coba lagi.${NC}"
+                    sleep 2
+                fi
                 ;;
-            4)
-                display_current_status
-                ;;
-            5)
-                uninstall_optimizer
-                ;;
-            6)
+            8)
                 echo -e "${GREEN}Terima kasih telah menggunakan skrip ini!${NC}"
                 exit 0
                 ;;
