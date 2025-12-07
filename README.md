@@ -4,7 +4,6 @@
 
 ```
 wget -q -O /usr/local/sbin/tcp-bbr https://raw.githubusercontent.com/Nizwarax/tcp_bbr/main/tcp_optimizer.sh && chmod +x /usr/local/sbin/tcp-bbr && sed -i 's/\r$//' /usr/local/sbin/tcp-bbr
-
 ```
 
 ```
