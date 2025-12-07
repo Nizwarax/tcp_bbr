@@ -54,11 +54,11 @@ show_banner() {
     echo -e "${YELLOW}┌────────────${NC} ${LIGHT}◈ Informasi Sistem ◈ ${NC}${YELLOW}────────────┐${NC}"
     echo -e "${YELLOW} ➽ OS         : $opsy ${NC}"
     echo -e "${YELLOW} ➽ Kernel     : $kern ${NC}"
-    echo -e "${YELLOW}└─────────────────────────────────────────────────┘${NC}"
+    echo -e "${YELLOW}└──────────────────────────────────────────────┘${NC}"
     echo -e "${YELLOW}┌────────────${NC} ${LIGHT}◈ Status Jaringan ◈ ${NC}${YELLOW}─────────────┐${NC}"
     echo -e "${YELLOW} ➽ TCP Algo   : ${GREEN}${CURRENT_ALGO^^}${NC}"  # ^^ agar huruf besar
     echo -e "${YELLOW} ➽ Queue Disc : ${GREEN}${CURRENT_QDISC^^}${NC}"
-    echo -e "${YELLOW}└─────────────────────────────────────────────────┘${NC}"
+    echo -e "${YELLOW}└──────────────────────────────────────────────┘${NC}"
     echo " ➽ Skrip untuk optimasi jaringan VPS (BBR/Hybla)"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo " ➽ Dibuat Oleh: https://t.me/Deki_niswara"
