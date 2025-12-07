@@ -75,21 +75,9 @@ Script ini memiliki dashboard interaktif dengan pilihan:
 | **TCP Buffer Max** | ~4MB | **67MB** | Throughput tinggi & Speedtest stabil |
 | **QDisc** | fq_codel | **fq** | Manajemen antrian paket data |
 | **MTU Probing** | Disabled (0) | **Enabled (1)** | Fix masalah koneksi VPN macet |
-
-📊 PERBANDINGAN TEKNIS
-=================================================================================
-PARAMETER KERNEL       DEFAULT LINUX        TITAN OPTIMIZED      FUNGSI UTAMA
----------------------------------------------------------------------------------
-Congestion Control     Cubic                BBR / Hybla          Algoritma Cerdas
-Max Connections        128                  65,535               Anti-Antri User
-TCP Buffer Max         ~4MB                 67MB                 Speed Stabil
-QDisc                  fq_codel             fq                   Manajemen Paket
-MTU Probing            Disabled (0)         Enabled (1)          Anti-Macet VPN
-=================================================================================
-
 📝 Credits & Author
- * Logic & Optimization: Gemini AI
- * Design & Development: Deki Niswara
+ * Logic & Optimization: t.me/Deki_niswara
+ * Design & Development: t.me/Dark_System2x
 > Note: Script ini membutuhkan Reboot setelah penerapan agar Kernel Linux dapat memuat ulang manajemen memori secara sempurna.
 > 
 
