@@ -27,8 +27,8 @@ tcp-bbr
 
 Jalankan perintah ini di terminal VPS Anda (Wajib Root):
 
-```bash
-wget -q -O /usr/local/sbin/bbr [https://raw.githubusercontent.com/Nizwarax/tcp-bbr/main/bbr](https://raw.githubusercontent.com/Nizwarax/tcp-bbr/main/bbr) && chmod +x /usr/local/sbin/bbr && sed -i 's/\r$//' /usr/local/sbin/bbr
+```
+wget -q -O /usr/local/sbin/bbr https://raw.githubusercontent.com/Nizwarax/tcp-bbr/main/bbr && chmod +x /usr/local/sbin/bbr && sed -i 's/\r$//' /usr/local/sbin/bbr
 ```
 
 Setelah terinstall, cukup ketik:
