@@ -10,7 +10,7 @@ wget -q -O /usr/local/sbin/tcp-bbr https://raw.githubusercontent.com/Nizwarax/tc
 ```
 tcp-bbr
 ```
-## 2. Auto-bbr (pro)
+## 2. TITAN TCP OPTIMIZER (pro)
 ```
  wget -q -O /usr/local/sbin/bbr https://raw.githubusercontent.com/Nizwarax/tcp-bbr/main/bbr && chmod +x /usr/local/sbin/bbr && sed -i 's/\r$//' /usr/local/sbin/bbr
 ```
