@@ -12,7 +12,7 @@ tcp-bbr
 ```
 
 
-# 🚀 TITAN TCP OPTIMIZER (PRO)
+# 2 🚀 TITAN TCP OPTIMIZER (PRO)
 ### Ultimate Network Tuning Kit for High-Performance VPS
 
 ![Bash](https://img.shields.io/badge/Language-Bash-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
