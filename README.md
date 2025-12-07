@@ -66,14 +66,27 @@ Script ini memiliki dashboard interaktif dengan pilihan:
    * Mengembalikan settingan pabrik Linux jika diperlukan.
  * 🔍 Cek Status
    * Memastikan algoritma dan tuning kernel sudah berjalan.
-📊 Perbandingan Teknis
+### 📊 Perbandingan Teknis
+
 | Parameter Kernel | Default Linux (Biasanya) | TITAN Optimized | Fungsi |
 |---|---|---|---|
-| Congestion Control | Cubic | BBR / Hybla | Algoritma pengiriman data cerdas |
-| Max Connections | 128 | 65,535 | Menangani ribuan user tanpa antri |
-| TCP Buffer Max | ~4MB | 67MB | Throughput tinggi & Speedtest stabil |
-| QDisc | fq_codel | fq | Manajemen antrian paket data |
-| MTU Probing | Disabled (0) | Enabled (1) | Fix masalah koneksi VPN macet |
+| **Congestion Control** | Cubic | **BBR / Hybla** | Algoritma pengiriman data cerdas |
+| **Max Connections** | 128 | **65,535** | Menangani ribuan user tanpa antri |
+| **TCP Buffer Max** | ~4MB | **67MB** | Throughput tinggi & Speedtest stabil |
+| **QDisc** | fq_codel | **fq** | Manajemen antrian paket data |
+| **MTU Probing** | Disabled (0) | **Enabled (1)** | Fix masalah koneksi VPN macet |
+
+📊 PERBANDINGAN TEKNIS
+=================================================================================
+PARAMETER KERNEL       DEFAULT LINUX        TITAN OPTIMIZED      FUNGSI UTAMA
+---------------------------------------------------------------------------------
+Congestion Control     Cubic                BBR / Hybla          Algoritma Cerdas
+Max Connections        128                  65,535               Anti-Antri User
+TCP Buffer Max         ~4MB                 67MB                 Speed Stabil
+QDisc                  fq_codel             fq                   Manajemen Paket
+MTU Probing            Disabled (0)         Enabled (1)          Anti-Macet VPN
+=================================================================================
+
 📝 Credits & Author
  * Logic & Optimization: Gemini AI
  * Design & Development: Deki Niswara
