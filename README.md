@@ -75,10 +75,12 @@ Script ini memiliki dashboard interaktif dengan pilihan:
 | **TCP Buffer Max** | ~4MB | **67MB** | Throughput tinggi & Speedtest stabil |
 | **QDisc** | fq_codel | **fq** | Manajemen antrian paket data |
 | **MTU Probing** | Disabled (0) | **Enabled (1)** | Fix masalah koneksi VPN macet |
-| Role | Contact |
-| :--- | :--- |
-| **Logic & Optimization** | [![Telegram](https://img.shields.io/badge/Telegram-Deki__niswara-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Deki_niswara) |
-| **Design & Development** | [![Telegram](https://img.shields.io/badge/Telegram-Dark__System2x-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Dark_System2x) |
-> Note: Script ini membutuhkan Reboot setelah penerapan agar Kernel Linux dapat memuat ulang manajemen memori secara sempurna.
+## 📝 Credits & Author
+
+* **Logic & Optimization:** [![Telegram](https://img.shields.io/badge/Telegram-@Deki_niswara-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Deki_niswara)
+
+* **Design & Development:** [![Telegram](https://img.shields.io/badge/Telegram-@Dark_System2x-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Dark_System2x)
+
+> ⚠️ **Note:** Script ini membutuhkan **Reboot** setelah penerapan agar Kernel Linux dapat memuat ulang manajemen memori secara sempurna.
 > 
 
