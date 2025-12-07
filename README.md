@@ -10,15 +10,9 @@ wget -q -O /usr/local/sbin/tcp-bbr https://raw.githubusercontent.com/Nizwarax/tc
 ```
 tcp-bbr
 ```
-## 2. TITAN TCP OPTIMIZER (pro)
-```
- wget -q -O /usr/local/sbin/bbr https://raw.githubusercontent.com/Nizwarax/tcp-bbr/main/bbr && chmod +x /usr/local/sbin/bbr && sed -i 's/\r$//' /usr/local/sbin/bbr
-```
-```
-bbr
-```
 
-# 🚀 TITAN TCP OPTIMIZER
+
+# 🚀 TITAN TCP OPTIMIZER (PRO)
 ### Ultimate Network Tuning Kit for High-Performance VPS
 
 ![Bash](https://img.shields.io/badge/Language-Bash-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
