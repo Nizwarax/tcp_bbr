@@ -112,9 +112,9 @@ install_xanmod() {
         return
     fi
 
-    # 1. Update & Install Tools
+    # 1. Update & Install Tools (FIXED: awk -> gawk)
     print_info "Mengupdate repository..."
-    apt-get update -qq && apt-get install wget gpg awk -y -qq
+    apt-get update -qq && apt-get install wget gpg gawk -y -qq
 
     # 2. Tambah GPG Key Resmi Xanmod
     print_info "Menambahkan GPG Key Xanmod..."
@@ -132,9 +132,13 @@ install_xanmod() {
     show_success_art "KERNEL XANMOD BERHASIL DIINSTALL"
     echo -e "${RED}PENTING: ANDA HARUS REBOOT (RESTART) VPS SEKARANG!${NC}"
     echo -e "${YELLOW}Setelah Reboot, jalankan script ini lagi dan pilih MENU 2.${NC}"
+    
+    echo ""
     read -p "Reboot sekarang? (y/n): " reboot_now
-    if [[ "$reboot_now" == "y" ]]; then
+    if [[ "$reboot_now" == "y" || "$reboot_now" == "Y" ]]; then
+        echo -e "${GREEN}Sistem sedang Reboot... Sampai jumpa!${NC}"
         reboot
+        exit 0
     fi
 }
 
