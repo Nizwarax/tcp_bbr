@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # ┌──────────────────────────────────────────────┐
-# │  TITAN TCP OPTIMIZER - DASHBOARD EDITION     │
-# │  Fitur: Status Realtime di Header            │
-# │  Logic: Powerfull Kernel Tuning              │
+# │  TITAN XANMOD ULTIMATE - HYBRID EDITION      │
+# │  Engine: Xanmod Kernel (High Performance)    │
+# │  Tuning: Titan Logic (Max Throughput)        │
 # └──────────────────────────────────────────────┘
 
 # Pastikan Root
@@ -25,53 +25,50 @@ export NC='\033[0m'
 CONFIG_FILE="/etc/sysctl.conf"
 BACKUP_FILE="/etc/sysctl.conf.bak.$(date +%F_%T)"
 
-# === FUNGSI DETEKSI OS (Agar Tampilan Rapi) ===
+# === FUNGSI INFO SISTEM ===
 get_os_info() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
         OS_NAME="$PRETTY_NAME"
-    elif command -v lsb_release >/dev/null 2>&1; then
-        OS_NAME=$(lsb_release -ds)
     else
-        OS_NAME=$(cat /etc/*release | grep -m1 PRETTY_NAME | cut -d'"' -f2)
+        OS_NAME=$(uname -s)
     fi
-    [ -z "$OS_NAME" ] && OS_NAME="Unknown"
     echo "$OS_NAME"
 }
 
-# === FUNGSI TAMPILAN HEADER (PENGGANTI ASCII LAMA) ===
+# === TAMPILAN HEADER (DASHBOARD) ===
 show_banner() {
     clear
-    # Ambil Data Realtime
     opsy=$(get_os_info)
     kern=$(uname -r)
     
-    # Ambil Status TCP
+    # Cek Status TCP
     CURRENT_ALGO=$(sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null || echo "Unknown")
-    CURRENT_QDISC=$(sysctl -n net.core.default_qdisc 2>/dev/null || echo "Unknown")
-
-    # Tampilkan Box Informasi (Gaya Script Swap)
+    
     echo -e "${YELLOW}┌────────────${NC} ${LIGHT}◈ Informasi Sistem ◈ ${NC}${YELLOW}────────────┐${NC}"
     echo -e "${YELLOW} ➽ OS         : $opsy ${NC}"
     echo -e "${YELLOW} ➽ Kernel     : $kern ${NC}"
     echo -e "${YELLOW}└──────────────────────────────────────────────┘${NC}"
     echo -e "${YELLOW}┌────────────${NC} ${LIGHT}◈ Status Jaringan ◈ ${NC}${YELLOW}─────────────┐${NC}"
-    echo -e "${YELLOW} ➽ TCP Algo   : ${GREEN}${CURRENT_ALGO^^}${NC}"  # ^^ agar huruf besar
-    echo -e "${YELLOW} ➽ Queue Disc : ${GREEN}${CURRENT_QDISC^^}${NC}"
+    echo -e "${YELLOW} ➽ TCP Algo   : ${GREEN}${CURRENT_ALGO^^}${NC}"
+    if [[ "$kern" == *"xanmod"* ]]; then
+        echo -e "${YELLOW} ➽ Engine     : ${CYAN}XANMOD HIGH PERF${NC}"
+    else
+        echo -e "${YELLOW} ➽ Engine     : ${RED}STANDARD LINUX${NC}"
+    fi
     echo -e "${YELLOW}└──────────────────────────────────────────────┘${NC}"
-    echo " ➽ Skrip untuk optimasi jaringan VPS (BBR/Hybla)"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo " ➽ Dibuat Oleh: https://t.me/Deki_niswara"
+    echo " ➽ TITAN XANMOD ULTIMATE (Kernel + Network Tuning)"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 }
 
-# === FUNGSI SELEBRASI SUKSES (ART ANDA) ===
+# === SENI SELEBRASI (ART ANDA) ===
 show_success_art() {
     local msg="$1"
     clear
     echo -e "${GREEN}⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣴⠷⣶⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
     echo -e "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣷⣾⠟⠛⠋⠁⠀⠈⠉⠛⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀"
     echo -e "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠈⠉⣡⡴⠶⣤⠶⠷⣦⠀⣀⣈⠻⣿⡀⠀⠀⠀⠀⠀⠀"
+    echo -e "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣳⣾⣯⠀⠀⠀⠀⣤⡈⠉⠉⢹⡇⢹⣷⠀⠀⠀⠀⠀⠀"
     echo -e "⠀⠀⠀⠀⠀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⢘⣿⠋⣤⡄⠀⣤⠀⢀⡈⠓⠀⣼⣿⣄⢸⣿⠀⠀⠀⠀⠀⠀"
     echo -e "⠀⠀⠀⣴⡿⠛⠛⣿⡧⠀⠀⠀⠀⠀⠀⣼⡟⠀⠛⢡⡾⠋⠀⠸⠇⠀⠀⣾⣿⣿⣾⠟⠀⠀⠀⠀⠀⠀"
     echo -e "⠀⠀⢸⣿⠀⠀⢰⣿⠇⠀⠀⠀⠀⠀⠀⣿⡇⢀⡀⠘⠗⠀⠀⣤⡀⠀⠀⠈⠛⢿⣿⠀⠀⠀⠀⠀⠀⠀"
@@ -99,32 +96,56 @@ show_success_art() {
     echo -e "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⢿⡿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀${NC}"
     echo -e ""
     echo -e "${PURPLE}\n[ $msg ]\n${NC}"
-    echo -e "${YELLOW}Perubahan diterapkan. Silakan Reboot agar maksimal.${NC}"
 }
 
 print_info() { echo -e "${BLUE}➽ $1${NC}"; }
 print_error() { echo -e "${RED}✘ ✘ $1${NC}"; }
 print_success() { echo -e "${GREEN}✔ $1${NC}"; }
 
-# === LOGIC POWERFULL ===
+# === BAGIAN 1: INSTALL KERNEL XANMOD (ENGINE) ===
+install_xanmod() {
+    print_info "Memulai Instalasi Kernel Xanmod..."
+    
+    # Cek apakah sistem Debian/Ubuntu
+    if [ ! -f /etc/debian_version ]; then
+        print_error "Script ini hanya untuk Debian/Ubuntu!"
+        return
+    fi
 
-check_requirements() {
-    # Cek Kernel
-    if [[ $(uname -r | cut -d "." -f 1) -lt 4 ]]; then
-        print_error "Kernel terlalu tua! Minimal Kernel 4.9 untuk BBR."
-        echo "Silakan update kernel OS Anda."
-        exit 1
+    # 1. Update & Install Tools
+    print_info "Mengupdate repository..."
+    apt-get update -qq && apt-get install wget gpg awk -y -qq
+
+    # 2. Tambah GPG Key Resmi Xanmod
+    print_info "Menambahkan GPG Key Xanmod..."
+    wget -qO - https://dl.xanmod.org/gpg.key | gpg --dearmor --yes -o /usr/share/keyrings/xanmod-archive-keyring.gpg
+
+    # 3. Tambah Repository
+    print_info "Menambahkan Repository Xanmod..."
+    echo 'deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main' | tee /etc/apt/sources.list.d/xanmod-kernel.list
+
+    # 4. Install Kernel (Pilih Edge untuk performa BBR terbaik)
+    print_info "Menginstall Paket Kernel (Ini butuh waktu, mohon sabar)..."
+    apt-get update -qq && apt-get install linux-xanmod-edge -y
+
+    # 5. Selesai
+    show_success_art "KERNEL XANMOD BERHASIL DIINSTALL"
+    echo -e "${RED}PENTING: ANDA HARUS REBOOT (RESTART) VPS SEKARANG!${NC}"
+    echo -e "${YELLOW}Setelah Reboot, jalankan script ini lagi dan pilih MENU 2.${NC}"
+    read -p "Reboot sekarang? (y/n): " reboot_now
+    if [[ "$reboot_now" == "y" ]]; then
+        reboot
     fi
 }
 
-backup_config() {
-    print_info "Membuat backup konfigurasi sysctl..."
+# === BAGIAN 2: TITAN NETWORK TUNING (TURBO) ===
+apply_titan_tuning() {
+    print_info "Menerapkan TITAN Network Logic..."
+    
+    # 1. Backup
     cp "$CONFIG_FILE" "$BACKUP_FILE"
-    print_success "Backup disimpan: $BACKUP_FILE"
-}
-
-clean_sysctl() {
-    # Hapus baris yang mungkin duplikat
+    
+    # 2. Bersihkan Config Lama
     sed -i '/net.core.default_qdisc/d' $CONFIG_FILE
     sed -i '/net.ipv4.tcp_congestion_control/d' $CONFIG_FILE
     sed -i '/net.core.somaxconn/d' $CONFIG_FILE
@@ -132,88 +153,85 @@ clean_sysctl() {
     sed -i '/net.ipv4.tcp_wmem/d' $CONFIG_FILE
     sed -i '/net.ipv4.tcp_mtu_probing/d' $CONFIG_FILE
     sed -i '/fs.file-max/d' $CONFIG_FILE
-}
 
-apply_bbr() {
-    print_info "Mengaktifkan TCP BBR + Full Stack Optimization..."
-    clean_sysctl
-    
-    # Load Module
+    # 3. Load Module BBR (Jika Xanmod sudah ada BBR bawaan, ini aman)
     modprobe tcp_bbr
     echo "tcp_bbr" >> /etc/modules-load.d/modules.conf 2>/dev/null
 
+    # 4. Inject TITAN Parameters (Agresif)
     cat >> $CONFIG_FILE <<EOF
-# --- TITAN NETWORK OPTIMIZER (BBR) ---
+# --- TITAN XANMOD ULTIMATE TUNING ---
+# BBR & Queuing
 net.core.default_qdisc = fq
 net.ipv4.tcp_congestion_control = bbr
+
+# Connection Limits (Powerfull)
 fs.file-max = 2097152
+net.core.somaxconn = 65535
+net.core.netdev_max_backlog = 250000
+
+# Buffer Sizes (Speed Stabilizer)
 net.core.rmem_max = 67108864
 net.core.wmem_max = 67108864
-net.core.netdev_max_backlog = 250000
-net.core.somaxconn = 65535
 net.ipv4.tcp_rmem = 4096 87380 67108864
 net.ipv4.tcp_wmem = 4096 65536 67108864
+
+# VPN Optimization
 net.ipv4.tcp_mtu_probing = 1
 net.ipv4.ip_forward = 1
 net.ipv4.tcp_window_scaling = 1
 net.ipv4.tcp_adv_win_scale = -2
 net.ipv4.tcp_keepalive_time = 600
 net.ipv4.tcp_notsent_lowat = 16384
+net.ipv4.tcp_fastopen = 3
 EOF
+    
+    # 5. Apply
     sysctl -p > /dev/null
-    show_success_art "TCP BBR SUKSES DIAKTIFKAN"
+    
+    # 6. Tune Limits (Ulimit)
+    if ! grep -q "ulimit -SHn 1000000" /etc/profile; then
+        echo "ulimit -SHn 1000000" >> /etc/profile
+    fi
+    
+    show_success_art "TITAN TUNING BERHASIL DITERAPKAN"
 }
 
-apply_hybla() {
-    print_info "Mengaktifkan TCP Hybla (Mode Satelit/Ping Tinggi)..."
-    clean_sysctl
-    
-    modprobe tcp_hybla
-    echo "tcp_hybla" >> /etc/modules-load.d/modules.conf 2>/dev/null
-
-    cat >> $CONFIG_FILE <<EOF
-# --- TITAN NETWORK OPTIMIZER (HYBLA) ---
-net.core.default_qdisc = fq
-net.ipv4.tcp_congestion_control = hybla
-fs.file-max = 1000000
-net.ipv4.tcp_low_latency = 1
-net.ipv4.tcp_window_scaling = 1
-net.ipv4.ip_forward = 1
-EOF
+remove_tuning() {
+    sed -i '/TITAN XANMOD/d' $CONFIG_FILE
+    # Hapus baris-baris custom
+    sed -i '/net.core.default_qdisc/d' $CONFIG_FILE
+    sed -i '/net.ipv4.tcp_congestion_control/d' $CONFIG_FILE
+    # Kembalikan ke standar
+    echo "net.core.default_qdisc = fq_codel" >> $CONFIG_FILE
+    echo "net.ipv4.tcp_congestion_control = cubic" >> $CONFIG_FILE
     sysctl -p > /dev/null
-    show_success_art "TCP HYBLA SUKSES DIAKTIFKAN"
-}
-
-restore_default() {
-    print_info "Mengembalikan ke Default (Cubic)..."
-    clean_sysctl
-    
-    cat >> $CONFIG_FILE <<EOF
-# --- TITAN DEFAULT ---
-net.core.default_qdisc = fq_codel
-net.ipv4.tcp_congestion_control = cubic
-EOF
-    sysctl -p > /dev/null
-    show_success_art "KEMBALI KE DEFAULT (CUBIC)"
+    echo "Tuning dihapus. Kembali ke default."
 }
 
 # === MAIN MENU ===
-check_requirements
 while true; do
     show_banner
-    echo -e "${YELLOW} [1] ${NC} 🚀 Aktifkan TCP BBR (Recommended for VPN/Xray)"
-    echo -e "${YELLOW} [2] ${NC} 📡 Aktifkan TCP Hybla (Ping Tinggi/Satelit)"
-    echo -e "${YELLOW} [3] ${NC} ↺  Restore Default (Cubic)"
-    echo -e "${YELLOW} [4] ${NC} Keluar"
+    echo -e "${YELLOW} LANGKAH 1: INSTALL ENGINE (KERNEL)${NC}"
+    echo -e "${CYAN} [1] ${NC} Install Kernel Xanmod (High Performance)"
     echo ""
-    echo -e -n "${CYAN} Pilih Menu [1-4]: ${NC}"
+    echo -e "${YELLOW} LANGKAH 2: PASANG TURBO (TUNING)${NC}"
+    echo -e "${CYAN} [2] ${NC} 🚀 Aktifkan TITAN BBR + Ultimate Tuning"
+    echo ""
+    echo -e "${YELLOW} OPSI LAIN${NC}"
+    echo -e "${CYAN} [3] ${NC} Cek Status Kernel & BBR"
+    echo -e "${CYAN} [4] ${NC} Hapus Tuning (Restore Default)"
+    echo -e "${CYAN} [5] ${NC} Keluar"
+    echo ""
+    echo -e -n "${CYAN} Pilih Menu [1-5]: ${NC}"
     read choice
 
     case $choice in
-        1) backup_config; apply_bbr; read -p "Tekan Enter..." ;;
-        2) backup_config; apply_hybla; read -p "Tekan Enter..." ;;
-        3) restore_default; read -p "Tekan Enter..." ;;
-        4) exit 0 ;;
+        1) install_xanmod; read -p "Tekan Enter..." ;;
+        2) apply_titan_tuning; read -p "Tekan Enter..." ;;
+        3) uname -r; sysctl net.ipv4.tcp_congestion_control; read -p "Tekan Enter..." ;;
+        4) remove_tuning; read -p "Tekan Enter..." ;;
+        5) exit 0 ;;
         *) print_error "Pilihan salah!"; sleep 1 ;;
     esac
 done
