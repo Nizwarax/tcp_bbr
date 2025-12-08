@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # ┌──────────────────────────────────────────────┐
-# │  TITAN XANMOD ULTIMATE - HYBRID EDITION      │
-# │  Engine: Xanmod Kernel (High Performance)    │
-# │  Tuning: Titan Logic (Max Throughput)        │
+# │  TITAN XANMOD ULTIMATE - SMART EDITION       │
+# │  Fitur: Auto-Detect Virtualization (Anti-Fail)│
+# │  Logic: Only allow Kernel Install on KVM     │
 # └──────────────────────────────────────────────┘
 
 # Pastikan Root
@@ -25,7 +25,18 @@ export NC='\033[0m'
 CONFIG_FILE="/etc/sysctl.conf"
 BACKUP_FILE="/etc/sysctl.conf.bak.$(date +%F_%T)"
 
-# === FUNGSI INFO SISTEM ===
+# === FUNGSI DETEKSI VIRTUALISASI (SMART CHECK) ===
+get_virt_type() {
+    # Cek arsitektur
+    ARCH=$(uname -m)
+    # Cek virtualisasi
+    VIRT=$(systemd-detect-virt 2>/dev/null)
+    
+    if [[ "$VIRT" == "" ]]; then VIRT="unknown"; fi
+    echo "$VIRT|$ARCH"
+}
+
+# === INFO SISTEM ===
 get_os_info() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
@@ -42,12 +53,23 @@ show_banner() {
     opsy=$(get_os_info)
     kern=$(uname -r)
     
+    # Ambil Info Virt
+    VIRT_DATA=$(get_virt_type)
+    VIRT_TYPE=$(echo $VIRT_DATA | cut -d'|' -f1)
+    ARCH_TYPE=$(echo $VIRT_DATA | cut -d'|' -f2)
+
     # Cek Status TCP
     CURRENT_ALGO=$(sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null || echo "Unknown")
     
     echo -e "${YELLOW}┌────────────${NC} ${LIGHT}◈ Informasi Sistem ◈ ${NC}${YELLOW}────────────┐${NC}"
     echo -e "${YELLOW} ➽ OS         : $opsy ${NC}"
     echo -e "${YELLOW} ➽ Kernel     : $kern ${NC}"
+    # Tampilkan Tipe VPS
+    if [[ "$VIRT_TYPE" == "kvm" || "$VIRT_TYPE" == "oracle" || "$VIRT_TYPE" == "vmware" ]] && [[ "$ARCH_TYPE" == "x86_64" ]]; then
+        echo -e "${YELLOW} ➽ Tipe VPS   : ${GREEN}${VIRT_TYPE^^} (Support Kernel)${NC}"
+    else
+        echo -e "${YELLOW} ➽ Tipe VPS   : ${RED}${VIRT_TYPE^^} (Not Support Kernel)${NC}"
+    fi
     echo -e "${YELLOW}└──────────────────────────────────────────────┘${NC}"
     echo -e "${YELLOW}┌────────────${NC} ${LIGHT}◈ Status Jaringan ◈ ${NC}${YELLOW}─────────────┐${NC}"
     echo -e "${YELLOW} ➽ TCP Algo   : ${GREEN}${CURRENT_ALGO^^}${NC}"
@@ -57,7 +79,7 @@ show_banner() {
         echo -e "${YELLOW} ➽ Engine     : ${RED}STANDARD LINUX${NC}"
     fi
     echo -e "${YELLOW}└──────────────────────────────────────────────┘${NC}"
-    echo " ➽ TITAN XANMOD ULTIMATE (Kernel + Network Tuning)"
+    echo " ➽ TITAN XANMOD SMART (Auto-Detect KVM/LXC)"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 }
 
@@ -104,6 +126,29 @@ print_success() { echo -e "${GREEN}✔ $1${NC}"; }
 
 # === BAGIAN 1: INSTALL KERNEL XANMOD (ENGINE) ===
 install_xanmod() {
+    # 1. CEK VIRTUALISASI (SMART CHECK)
+    VIRT_DATA=$(get_virt_type)
+    VIRT_TYPE=$(echo $VIRT_DATA | cut -d'|' -f1)
+    ARCH_TYPE=$(echo $VIRT_DATA | cut -d'|' -f2)
+
+    if [[ "$VIRT_TYPE" != "kvm" && "$VIRT_TYPE" != "oracle" && "$VIRT_TYPE" != "vmware" ]]; then
+        print_error "VPS Anda menggunakan Virtualisasi: ${VIRT_TYPE^^}"
+        echo -e "${RED}Kernel Xanmod TIDAK BISA diinstall di OpenVZ/LXC Container.${NC}"
+        echo -e "${YELLOW}Silakan langsung pilih MENU 2 (TITAN Tuning).${NC}"
+        echo -e "${YELLOW}Menu 2 tetap Powerfull untuk VPS tipe ini.${NC}"
+        read -p "Tekan Enter untuk kembali..."
+        return
+    fi
+    
+    if [[ "$ARCH_TYPE" != "x86_64" ]]; then
+        print_error "Arsitektur CPU Anda: $ARCH_TYPE"
+        echo -e "${RED}Xanmod hanya support AMD/Intel 64bit (x86_64).${NC}"
+        echo -e "${YELLOW}Silakan langsung pilih MENU 2.${NC}"
+        read -p "Tekan Enter untuk kembali..."
+        return
+    fi
+
+    # 2. PROSES INSTALL (Jika Lolos Cek)
     print_info "Memulai Instalasi Kernel Xanmod..."
     
     if [ ! -f /etc/debian_version ]; then
@@ -120,11 +165,9 @@ install_xanmod() {
     print_info "Menambahkan Repository Xanmod..."
     echo 'deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main' | tee /etc/apt/sources.list.d/xanmod-kernel.list
 
-    # UPDATE UTAMA: Menggunakan x64v3 (Stable) alih-alih Edge
     print_info "Menginstall Paket Kernel Xanmod (x64v3 Stable)..."
     apt-get update -qq
     
-    # Coba install x64v3, jika gagal fallback ke v2
     if apt-get install linux-xanmod-x64v3 -y; then
         print_success "Kernel x64v3 berhasil diinstall!"
     else
@@ -132,7 +175,6 @@ install_xanmod() {
         apt-get install linux-xanmod-x64v2 -y
     fi
 
-    # 5. Selesai
     show_success_art "KERNEL XANMOD BERHASIL DIINSTALL"
     echo -e "${RED}PENTING: ANDA HARUS REBOOT (RESTART) VPS SEKARANG!${NC}"
     echo -e "${YELLOW}Setelah Reboot, jalankan script ini lagi dan pilih MENU 2.${NC}"
@@ -150,10 +192,8 @@ install_xanmod() {
 apply_titan_tuning() {
     print_info "Menerapkan TITAN Network Logic..."
     
-    # 1. Backup
     cp "$CONFIG_FILE" "$BACKUP_FILE"
     
-    # 2. Bersihkan Config Lama
     sed -i '/net.core.default_qdisc/d' $CONFIG_FILE
     sed -i '/net.ipv4.tcp_congestion_control/d' $CONFIG_FILE
     sed -i '/net.core.somaxconn/d' $CONFIG_FILE
@@ -162,29 +202,20 @@ apply_titan_tuning() {
     sed -i '/net.ipv4.tcp_mtu_probing/d' $CONFIG_FILE
     sed -i '/fs.file-max/d' $CONFIG_FILE
 
-    # 3. Load Module BBR
-    modprobe tcp_bbr
+    modprobe tcp_bbr 2>/dev/null
     echo "tcp_bbr" >> /etc/modules-load.d/modules.conf 2>/dev/null
 
-    # 4. Inject TITAN Parameters
     cat >> $CONFIG_FILE <<EOF
 # --- TITAN XANMOD ULTIMATE TUNING ---
-# BBR & Queuing
 net.core.default_qdisc = fq
 net.ipv4.tcp_congestion_control = bbr
-
-# Connection Limits (Powerfull)
 fs.file-max = 2097152
 net.core.somaxconn = 65535
 net.core.netdev_max_backlog = 250000
-
-# Buffer Sizes (Speed Stabilizer)
 net.core.rmem_max = 67108864
 net.core.wmem_max = 67108864
 net.ipv4.tcp_rmem = 4096 87380 67108864
 net.ipv4.tcp_wmem = 4096 65536 67108864
-
-# VPN Optimization
 net.ipv4.tcp_mtu_probing = 1
 net.ipv4.ip_forward = 1
 net.ipv4.tcp_window_scaling = 1
@@ -194,10 +225,8 @@ net.ipv4.tcp_notsent_lowat = 16384
 net.ipv4.tcp_fastopen = 3
 EOF
     
-    # 5. Apply
     sysctl -p > /dev/null
     
-    # 6. Tune Limits (Ulimit)
     if ! grep -q "ulimit -SHn 1000000" /etc/profile; then
         echo "ulimit -SHn 1000000" >> /etc/profile
     fi
@@ -207,10 +236,8 @@ EOF
 
 remove_tuning() {
     sed -i '/TITAN XANMOD/d' $CONFIG_FILE
-    # Hapus baris-baris custom
     sed -i '/net.core.default_qdisc/d' $CONFIG_FILE
     sed -i '/net.ipv4.tcp_congestion_control/d' $CONFIG_FILE
-    # Kembalikan ke standar
     echo "net.core.default_qdisc = fq_codel" >> $CONFIG_FILE
     echo "net.ipv4.tcp_congestion_control = cubic" >> $CONFIG_FILE
     sysctl -p > /dev/null
@@ -220,7 +247,17 @@ remove_tuning() {
 # === MAIN MENU ===
 while true; do
     show_banner
-    echo -e "${YELLOW} [1] ${NC} Install Kernel Xanmod (High Performance)"
+    # Cek Virtualisasi untuk pewarnaan menu
+    VIRT_DATA=$(get_virt_type)
+    VIRT_TYPE=$(echo $VIRT_DATA | cut -d'|' -f1)
+    
+    if [[ "$VIRT_TYPE" != "kvm" && "$VIRT_TYPE" != "oracle" && "$VIRT_TYPE" != "vmware" ]]; then
+        # Jika bukan KVM, Menu 1 diwarnai Merah (Tanda Dilarang)
+        echo -e "${RED} [1] ${NC} Install Kernel Xanmod (TIDAK SUPPORT DI VPS INI)"
+    else
+        echo -e "${YELLOW} [1] ${NC} Install Kernel Xanmod (High Performance)"
+    fi
+
     echo -e "${YELLOW} [2] ${NC} 🚀 Aktifkan TITAN BBR + Ultimate Tuning"
     echo -e "${YELLOW} [3] ${NC} Cek Status Kernel & BBR"
     echo -e "${YELLOW} [4] ${NC} Hapus Tuning (Restore Default)"
