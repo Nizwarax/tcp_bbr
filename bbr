@@ -61,7 +61,7 @@ show_banner() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 }
 
-# === SENI SELEBRASI (ART ANDA) ===
+# === SENI SELEBRASI ===
 show_success_art() {
     local msg="$1"
     clear
@@ -106,27 +106,31 @@ print_success() { echo -e "${GREEN}✔ $1${NC}"; }
 install_xanmod() {
     print_info "Memulai Instalasi Kernel Xanmod..."
     
-    # Cek apakah sistem Debian/Ubuntu
     if [ ! -f /etc/debian_version ]; then
         print_error "Script ini hanya untuk Debian/Ubuntu!"
         return
     fi
 
-    # 1. Update & Install Tools (FIXED: awk -> gawk)
     print_info "Mengupdate repository..."
     apt-get update -qq && apt-get install wget gpg gawk -y -qq
 
-    # 2. Tambah GPG Key Resmi Xanmod
     print_info "Menambahkan GPG Key Xanmod..."
     wget -qO - https://dl.xanmod.org/gpg.key | gpg --dearmor --yes -o /usr/share/keyrings/xanmod-archive-keyring.gpg
 
-    # 3. Tambah Repository
     print_info "Menambahkan Repository Xanmod..."
     echo 'deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main' | tee /etc/apt/sources.list.d/xanmod-kernel.list
 
-    # 4. Install Kernel (Pilih Edge untuk performa BBR terbaik)
-    print_info "Menginstall Paket Kernel (Ini butuh waktu, mohon sabar)..."
-    apt-get update -qq && apt-get install linux-xanmod-edge -y
+    # UPDATE UTAMA: Menggunakan x64v3 (Stable) alih-alih Edge
+    print_info "Menginstall Paket Kernel Xanmod (x64v3 Stable)..."
+    apt-get update -qq
+    
+    # Coba install x64v3, jika gagal fallback ke v2
+    if apt-get install linux-xanmod-x64v3 -y; then
+        print_success "Kernel x64v3 berhasil diinstall!"
+    else
+        print_info "Versi v3 tidak cocok, mencoba versi v2..."
+        apt-get install linux-xanmod-x64v2 -y
+    fi
 
     # 5. Selesai
     show_success_art "KERNEL XANMOD BERHASIL DIINSTALL"
@@ -158,11 +162,11 @@ apply_titan_tuning() {
     sed -i '/net.ipv4.tcp_mtu_probing/d' $CONFIG_FILE
     sed -i '/fs.file-max/d' $CONFIG_FILE
 
-    # 3. Load Module BBR (Jika Xanmod sudah ada BBR bawaan, ini aman)
+    # 3. Load Module BBR
     modprobe tcp_bbr
     echo "tcp_bbr" >> /etc/modules-load.d/modules.conf 2>/dev/null
 
-    # 4. Inject TITAN Parameters (Agresif)
+    # 4. Inject TITAN Parameters
     cat >> $CONFIG_FILE <<EOF
 # --- TITAN XANMOD ULTIMATE TUNING ---
 # BBR & Queuing
@@ -216,16 +220,11 @@ remove_tuning() {
 # === MAIN MENU ===
 while true; do
     show_banner
-    echo -e "${YELLOW} LANGKAH 1: INSTALL ENGINE (KERNEL)${NC}"
-    echo -e "${CYAN} [1] ${NC} Install Kernel Xanmod (High Performance)"
-    echo ""
-    echo -e "${YELLOW} LANGKAH 2: PASANG TURBO (TUNING)${NC}"
-    echo -e "${CYAN} [2] ${NC} 🚀 Aktifkan TITAN BBR + Ultimate Tuning"
-    echo ""
-    echo -e "${YELLOW} OPSI LAIN${NC}"
-    echo -e "${CYAN} [3] ${NC} Cek Status Kernel & BBR"
-    echo -e "${CYAN} [4] ${NC} Hapus Tuning (Restore Default)"
-    echo -e "${CYAN} [5] ${NC} Keluar"
+    echo -e "${YELLOW} [1] ${NC} Install Kernel Xanmod (High Performance)"
+    echo -e "${YELLOW} [2] ${NC} 🚀 Aktifkan TITAN BBR + Ultimate Tuning"
+    echo -e "${YELLOW} [3] ${NC} Cek Status Kernel & BBR"
+    echo -e "${YELLOW} [4] ${NC} Hapus Tuning (Restore Default)"
+    echo -e "${YELLOW} [5] ${NC} Keluar"
     echo ""
     echo -e -n "${CYAN} Pilih Menu [1-5]: ${NC}"
     read choice
